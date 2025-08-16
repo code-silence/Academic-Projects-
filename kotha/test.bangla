@@ -1,0 +1,15 @@
+rakho x = 10;
+rakho y = 5;
+
+dekhao x;       
+dekhao y;       
+bolo "Testing conditions:";
+jodi (x > y) bolo "x boro y er theke "; 
+
+bolo "Math operations:";
+rakho z = x + y;
+dekhao z;       
+
+bolo "Division test:";
+rakho w = x / 2;
+dekhao w;       

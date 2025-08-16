@@ -1,0 +1,16 @@
+Syntax for 
+KOTHA: A Bangla Interpreter
+
+
+print something -->  bolo "your text" ; (bolo "amar sonar bangla")                    //siraj
+
+assign value -->  rakho <variable name> =  <value> ;  (rakho x = 1;)                     //md golam
+
+show value --> dekhao <variable name> ; (dekhao x;)                                       //mezba
+
+math operation --> bolo <number> + <number> ; (bolo 0+1)
+                   bolo <variable name> + <number> ;  (bolo x+1)                         //arnob 
+ 
+conditional statement -> jodi (<your condition>) //executable;
+			noile //executable  ;     
+			(example :  jodi (x>5) bolo "boro" ; noile bolo "soto" ;             //khalid
