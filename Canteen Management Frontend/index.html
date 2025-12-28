@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIU Campus Canteen - Food Ordering System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="logo-section">
+                    <div class="logo-icon">🌼</div>
+                    <div class="logo-text">
+                        <h1>DIU Campus Canteen</h1>
+                        <p>Daffodil International University</p>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="icon-btn" id="userBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <button class="icon-btn cart-btn" id="cartBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="cart-badge" id="cartBadge">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-bar">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search for food...">
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <div class="container">
+            <button class="nav-tab active" data-view="menu">Menu</button>
+            <button class="nav-tab" data-view="orders">
+                My Orders
+                <span class="nav-badge" id="ordersBadge" style="display: none;">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Menu View -->
+        <div id="menuView" class="view active">
+            <div class="container">
+                <!-- Category Filter -->
+                <div class="categories" id="categories"></div>
+                
+                <!-- Food Grid -->
+                <div class="food-grid" id="foodGrid"></div>
+                
+                <!-- Empty State -->
+                <div class="empty-state" id="emptySearch" style="display: none;">
+                    <p>No items found matching your search.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders View -->
+        <div id="ordersView" class="view">
+            <div class="container">
+                <div id="activeOrders"></div>
+                <div id="pastOrders"></div>
+                
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyOrders">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    </svg>
+                    <p>No orders yet</p>
+                    <small>Start ordering from the menu</small>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                Your Cart
+            </h2>
+            <button class="close-btn" id="closeCartBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <p>Your cart is empty</p>
+                <small>Add items from the menu to get started</small>
+            </div>
+        </div>
+        
+        <div class="cart-summary" id="cartSummary" style="display: none;">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="subtotal">৳0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery Fee</span>
+                <span id="deliveryFee">৳0.00</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span id="total">৳0.00</span>
+            </div>
+            <button class="btn-primary" id="checkoutBtn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal-overlay" id="checkoutOverlay"></div>
+    <div class="modal" id="checkoutModal">
+        <div class="modal-header">
+            <h2>Complete Your Order</h2>
+            <button class="close-btn" id="closeCheckoutBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <form class="modal-body" id="checkoutForm">
+            <div class="form-group">
+                <label>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    Delivery Location
+                </label>
+                <select id="locationSelect" required>
+                    <option value="">Select a location</option>
+                    <option value="Building 1 - Ground Floor">Building 1 - Ground Floor</option>
+                    <option value="Building 2 - 3rd Floor">Building 2 - 3rd Floor</option>
+                    <option value="Building 3 - Cafeteria Area">Building 3 - Cafeteria Area</option>
+                    <option value="Building 4 - Library">Building 4 - Library</option>
+                    <option value="Building 5 - Lab Area">Building 5 - Lab Area</option>
+                    <option value="Main Gate Area">Main Gate Area</option>
+                    <option value="Sports Complex">Sports Complex</option>
+                    <option value="Dormitory Block A">Dormitory Block A</option>
+                    <option value="Dormitory Block B">Dormitory Block B</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="phoneInput" placeholder="01XXXXXXXXX" pattern="[0-9]{11}" required>
+                <small>We'll call you when your order arrives</small>
+            </div>
+            
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Total Amount</span>
+                    <span id="checkoutTotal">৳0.00</span>
+                </div>
+                <p class="payment-info">Payment: Cash on Delivery</p>
+            </div>
+            
+            <button type="submit" class="btn-primary">Confirm Order</button>
+        </form>
+    </div>
+
+    <script>
+        // Data
+        const foodItems = [
+            { id: 1, name: 'Classic Beef Burger', category: 'Burgers', price: 180, image: 'https://images.unsplash.com/photo-1761315413256-e149b40f577b?w=400', description: 'Juicy beef patty with fresh vegetables', prepTime: '15-20 min', isAvailable: true },
+            { id: 2, name: 'Margherita Pizza', category: 'Pizza', price: 250, image: 'https://images.unsplash.com/photo-1689458322565-17c3d62c67b4?w=400', description: 'Classic pizza with tomato and mozzarella', prepTime: '20-25 min', isAvailable: true },
+            { id: 3, name: 'Club Sandwich', category: 'Sandwiches', price: 150, image: 'https://images.unsplash.com/photo-1763647814142-b1eb054d42f1?w=400', description: 'Triple decker with chicken, bacon, and vegetables', prepTime: '10-15 min', isAvailable: true },
+            { id: 4, name: 'Creamy Pasta Alfredo', category: 'Pasta', price: 200, image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400', description: 'Rich and creamy Alfredo sauce with fettuccine', prepTime: '15-20 min', isAvailable: true },
+            { id: 5, name: 'Special Fried Rice', category: 'Rice', price: 120, image: 'https://images.unsplash.com/photo-1646340916384-9845d7686e2e?w=400', description: 'Mixed vegetables and egg fried rice', prepTime: '15-20 min', isAvailable: true },
+            { id: 6, name: 'Chicken Curry with Rice', category: 'Curry', price: 140, image: 'https://images.unsplash.com/photo-1668665772043-bdd32e348998?w=400', description: 'Spicy chicken curry served with steamed rice', prepTime: '20-25 min', isAvailable: true },
+            { id: 7, name: 'Iced Coffee', category: 'Beverages', price: 80, image: 'https://images.unsplash.com/photo-1581470762681-018024ce84a7?w=400', description: 'Refreshing cold coffee with ice', prepTime: '5 min', isAvailable: true },
+            { id: 8, name: 'Chicken Wings', category: 'Snacks', price: 160, image: 'https://images.unsplash.com/photo-1761315413256-e149b40f577b?w=400', description: 'Crispy fried chicken wings with dipping sauce', prepTime: '15-20 min', isAvailable: true },
+            { id: 9, name: 'Veggie Burger', category: 'Burgers', price: 150, image: 'https://images.unsplash.com/photo-1761315413256-e149b40f577b?w=400', description: 'Vegetarian patty with fresh toppings', prepTime: '15-20 min', isAvailable: false },
+            { id: 10, name: 'Pepperoni Pizza', category: 'Pizza', price: 280, image: 'https://images.unsplash.com/photo-1689458322565-17c3d62c67b4?w=400', description: 'Loaded with pepperoni and mozzarella', prepTime: '20-25 min', isAvailable: true }
+        ];
+
+        const categories = ['All', 'Rice', 'Burgers', 'Pizza', 'Sandwiches', 'Pasta', 'Curry', 'Beverages', 'Snacks'];
+
+        // State
+        let state = {
+            currentView: 'menu',
+            selectedCategory: 'All',
+            searchQuery: '',
+            cart: [],
+            orders: []
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderFoodGrid();
+            setupEventListeners();
+            startOrderUpdates();
+        });
+
+        // Render Functions
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            container.innerHTML = categories.map(cat => `
+                <button class="category-btn ${cat === state.selectedCategory ? 'active' : ''}" data-category="${cat}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function renderFoodGrid() {
+            const filtered = foodItems.filter(item => {
+                const matchesCategory = state.selectedCategory === 'All' || item.category === state.selectedCategory;
+                const matchesSearch = item.name.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                                    item.description.toLowerCase().includes(state.searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            const grid = document.getElementById('foodGrid');
+            const emptyState = document.getElementById('emptySearch');
+
+            if (filtered.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+            } else {
+                grid.style.display = 'grid';
+                emptyState.style.display = 'none';
+                grid.innerHTML = filtered.map(item => `
+                    <div class="food-card">
+                        <div class="food-image">
+                            <img src="${item.image}" alt="${item.name}">
+                            ${!item.isAvailable ? '<div class="unavailable-overlay"><span>Currently Unavailable</span></div>' : ''}
+                        </div>
+                        <div class="food-content">
+                            <h3>${item.name}</h3>
+                            <p class="food-description">${item.description}</p>
+                            <div class="food-meta">
+                                <span class="food-category">${item.category}</span>
+                                <span class="food-time">⏱️ ${item.prepTime}</span>
+                            </div>
+                            <div class="food-footer">
+                                <span class="food-price">৳${item.price}</span>
+                                <button class="btn-add" onclick="addToCart(${item.id})" ${!item.isAvailable ? 'disabled' : ''}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartSummary = document.getElementById('cartSummary');
+            
+            if (state.cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="cart-empty">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <p>Your cart is empty</p>
+                        <small>Add items from the menu to get started</small>
+                    </div>
+                `;
+                cartSummary.style.display = 'none';
+            } else {
+                cartItems.innerHTML = state.cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-header">
+                            <div>
+                                <h4>${item.name}</h4>
+                                <p class="cart-item-price">৳${item.price}</p>
+                            </div>
+                            <button class="cart-remove" onclick="removeFromCart(${item.id})">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="cart-item-footer">
+                            <div class="quantity-control">
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                </button>
+                                <span>${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="cart-item-total">৳${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const deliveryFee = 20;
+                const total = subtotal + deliveryFee;
+                
+                document.getElementById('subtotal').textContent = `৳${subtotal.toFixed(2)}`;
+                document.getElementById('deliveryFee').textContent = `৳${deliveryFee.toFixed(2)}`;
+                document.getElementById('total').textContent = `৳${total.toFixed(2)}`;
+                document.getElementById('checkoutTotal').textContent = `৳${total.toFixed(2)}`;
+                
+                cartSummary.style.display = 'block';
+            }
+            
+            updateCartBadge();
+        }
+
+        function renderOrders() {
+            const activeOrders = state.orders.filter(o => o.status !== 'delivered');
+            const pastOrders = state.orders.filter(o => o.status === 'delivered');
+            
+            const activeContainer = document.getElementById('activeOrders');
+            const pastContainer = document.getElementById('pastOrders');
+            const emptyState = document.getElementById('emptyOrders');
+            
+            if (state.orders.length === 0) {
+                emptyState.style.display = 'block';
+                activeContainer.innerHTML = '';
+                pastContainer.innerHTML = '';
+            } else {
+                emptyState.style.display = 'none';
+                
+                if (activeOrders.length > 0) {
+                    activeContainer.innerHTML = '<h2>Active Orders</h2>' + activeOrders.map(order => renderOrderTracking(order)).join('');
+                } else {
+                    activeContainer.innerHTML = '';
+                }
+                
+                if (pastOrders.length > 0) {
+                    pastContainer.innerHTML = '<h2>Order History</h2>' + pastOrders.map(order => renderOrderHistory(order)).join('');
+                } else {
+                    pastContainer.innerHTML = '';
+                }
+            }
+            
+            updateOrdersBadge();
+        }
+
+        function renderOrderTracking(order) {
+            const steps = [
+                { key: 'pending', label: 'Order Placed', icon: '🕐' },
+                { key: 'preparing', label: 'Preparing', icon: '📦' },
+                { key: 'ready', label: 'Ready for Pickup', icon: '✓' },
+                { key: 'delivering', label: 'Out for Delivery', icon: '🚴' },
+                { key: 'delivered', label: 'Delivered', icon: '✓' }
+            ];
+            
+            const statusIndex = steps.findIndex(s => s.key === order.status);
+            
+            return `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <h3>Order #${order.id}</h3>
+                            <p>${new Date(order.timestamp).toLocaleString()}</p>
+                        </div>
+                        <div class="order-eta">
+                            <small>Estimated Time</small>
+                            <strong>${order.estimatedTime}</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="order-timeline">
+                        ${steps.map((step, index) => `
+                            <div class="timeline-step ${index <= statusIndex ? 'completed' : ''} ${index === statusIndex ? 'current' : ''}">
+                                <div class="timeline-icon">${step.icon}</div>
+                                <div class="timeline-content">
+                                    <p>${step.label}</p>
+                                    ${index === statusIndex ? '<small>In progress...</small>' : ''}
+                                </div>
+                                ${index <= statusIndex ? '<div class="timeline-check">✓</div>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="order-details">
+                        <p class="order-location"><strong>Delivery Location:</strong> ${order.deliveryLocation}</p>
+                        <p class="order-items-title"><strong>Order Items:</strong></p>
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <span>${item.quantity}x ${item.name}</span>
+                                <span>৳${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                        <div class="order-total">
+                            <span>Total</span>
+                            <span>৳${order.total.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderOrderHistory(order) {
+            return `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <h3>Order #${order.id}</h3>
+                            <p>${new Date(order.timestamp).toLocaleString()}</p>
+                        </div>
+                        <span class="status-badge delivered">Delivered</span>
+                    </div>
+                    
+                    <div class="order-details">
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <span>${item.quantity}x ${item.name}</span>
+                                <span>৳${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                        <div class="order-total">
+                            <span>Total</span>
+                            <span>৳${order.total.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Cart Functions
+        function addToCart(id) {
+            const item = foodItems.find(f => f.id === id);
+            if (!item || !item.isAvailable) return;
+            
+            const existingItem = state.cart.find(c => c.id === id);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                state.cart.push({ ...item, quantity: 1 });
+            }
+            
+            renderCart();
+        }
+
+        function updateQuantity(id, quantity) {
+            if (quantity < 1) return;
+            const item = state.cart.find(c => c.id === id);
+            if (item) {
+                item.quantity = quantity;
+                renderCart();
+            }
+        }
+
+        function removeFromCart(id) {
+            state.cart = state.cart.filter(c => c.id !== id);
+            renderCart();
+        }
+
+        function updateCartBadge() {
+            const count = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.getElementById('cartBadge');
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
+        }
+
+        function updateOrdersBadge() {
+            const count = state.orders.filter(o => o.status !== 'delivered').length;
+            const badge = document.getElementById('ordersBadge');
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Search
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                state.searchQuery = e.target.value;
+                renderFoodGrid();
+            });
+
+            // Categories
+            document.getElementById('categories').addEventListener('click', (e) => {
+                if (e.target.classList.contains('category-btn')) {
+                    state.selectedCategory = e.target.dataset.category;
+                    renderCategories();
+                    renderFoodGrid();
+                }
+            });
+
+            // Navigation tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    state.currentView = tab.dataset.view;
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                    document.getElementById(state.currentView + 'View').classList.add('active');
+                    
+                    if (state.currentView === 'orders') {
+                        renderOrders();
+                    }
+                });
+            });
+
+            // Cart
+            document.getElementById('cartBtn').addEventListener('click', openCart);
+            document.getElementById('closeCartBtn').addEventListener('click', closeCart);
+            document.getElementById('cartOverlay').addEventListener('click', closeCart);
+
+            // Checkout
+            document.getElementById('checkoutBtn').addEventListener('click', openCheckout);
+            document.getElementById('closeCheckoutBtn').addEventListener('click', closeCheckout);
+            document.getElementById('checkoutOverlay').addEventListener('click', closeCheckout);
+            document.getElementById('checkoutForm').addEventListener('submit', handleCheckout);
+        }
+
+        function openCart() {
+            document.getElementById('cartSidebar').classList.add('open');
+            document.getElementById('cartOverlay').classList.add('open');
+            renderCart();
+        }
+
+        function closeCart() {
+            document.getElementById('cartSidebar').classList.remove('open');
+            document.getElementById('cartOverlay').classList.remove('open');
+        }
+
+        function openCheckout() {
+            if (state.cart.length === 0) return;
+            closeCart();
+            document.getElementById('checkoutModal').classList.add('open');
+            document.getElementById('checkoutOverlay').classList.add('open');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.remove('open');
+            document.getElementById('checkoutOverlay').classList.remove('open');
+        }
+
+        function handleCheckout(e) {
+            e.preventDefault();
+            
+            const location = document.getElementById('locationSelect').value;
+            const phone = document.getElementById('phoneInput').value;
+            
+            const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + 20;
+            
+            const order = {
+                id: 'ORD' + Date.now().toString().slice(-6),
+                items: state.cart.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                total: total,
+                status: 'pending',
+                timestamp: new Date(),
+                deliveryLocation: location,
+                estimatedTime: '25-30 min'
+            };
+            
+            state.orders.unshift(order);
+            state.cart = [];
+            
+            closeCheckout();
+            document.getElementById('checkoutForm').reset();
+            
+            // Switch to orders view
+            state.currentView = 'orders';
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-view="orders"]').classList.add('active');
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('ordersView').classList.add('active');
+            
+            renderOrders();
+            updateCartBadge();
+        }
+
+        // Order Updates
+        function startOrderUpdates() {
+            setInterval(() => {
+                let updated = false;
+                state.orders = state.orders.map(order => {
+                    if (order.status === 'delivered') return order;
+                    
+                    const progression = ['pending', 'preparing', 'ready', 'delivering', 'delivered'];
+                    const currentIndex = progression.indexOf(order.status);
+                    
+                    if (currentIndex < progression.length - 1) {
+                        updated = true;
+                        return { ...order, status: progression[currentIndex + 1] };
+                    }
+                    
+                    return order;
+                });
+                
+                if (updated && state.currentView === 'orders') {
+                    renderOrders();
+                }
+            }, 10000); // Update every 10 seconds
+        }
+    </script>
+</body>
+</html>
